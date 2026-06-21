@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks & Grade Calculator</title>
+    <style>
+       
+       body {
+            font-family: sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+         }
+        .calc-box {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result-card {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calc-box">
+    <h3 style="text-align: center; margin-top: 0;">Grade Calculator</h3>
+    
+    <div class="input-group">
+        <label>Number of Subjects:</label>
+        <input type="number" id="subCount" min="1" placeholder="e.g. 5">
+    </div>
+    <button onclick="createFields()">Next</button>
+
+    <div id="fieldsArea"></div>
+
+    <div id="scorecard" class="result-card"></div>
+</div>
+
+<script>
+    
+    function createFields() {
+        const count = parseInt(document.getElementById('subCount').value);
+        const area = document.getElementById('fieldsArea');
+        const scorecard = document.getElementById('scorecard');
+        
+        area.innerHTML = ''; 
+        scorecard.style.display = 'none';
+
+        if (isNaN(count) || count <= 0) {
+            alert('Please enter a valid count.');
+            return;
+        }
+
+        let dynamicHTML = '<p><b>Enter Marks (0-100):</b></p>';
+        for (let i = 1; i <= count; i++) {
+            dynamicHTML += `
+                <div class="input-group">
+                    <label>Subject ${i}:</label>
+                    <input type="number" class="mark-input" min="0" max="100">
+                </div>
+            `;
+        }
+        dynamicHTML += '<button onclick="runCalculations()">Calculate</button>';
+        area.innerHTML = dynamicHTML;
+    }
+
+    
+    function runCalculations() {
+        const inputs = document.querySelectorAll('.mark-input');
+        const scorecard = document.getElementById('scorecard');
+        
+        let total = 0;
+        let subjectsCount = inputs.length;
+
+        for (let i = 0; i < subjectsCount; i++) {
+            let mark = parseFloat(inputs[i].value);
+            
+            if (isNaN(mark) || mark < 0 || mark > 100) {
+                alert(`Please enter valid marks for Subject ${i + 1}.`);
+                return;
+            }
+            total += mark;
+        }
+
+        let avg = total / subjectsCount;
+        let letterGrade = '';
+
+        if (avg >= 90) letterGrade = 'A';
+        else if (avg >= 75) letterGrade = 'B';
+        else if (avg >= 50) letterGrade = 'C';
+        else letterGrade = 'F';
+
+        let passStatus = (avg >= 50) ? 'Pass' : 'Fail';
+
+        
+        scorecard.style.display = 'block';
+        scorecard.innerHTML = `
+            <p><strong>Total Marks:</strong> ${total} / ${subjectsCount * 100}</p>
+            <p><strong>Percentage:</strong> ${avg.toFixed(2)}%</p>
+            <p><strong>Grade:</strong> ${letterGrade}</p>
+            <p><strong>Result:</strong> ${passStatus}</p>
+        `;
+    }
+</script>
+
+</body>
+</html>
